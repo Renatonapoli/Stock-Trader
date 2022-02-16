@@ -3,7 +3,8 @@
     <v-card class="green darken-3 white--text">
       <v-card-title class="headline">
         <strong
-          >{{ stock.name }}<small>(Preço: {{ stock.price }})</small></strong
+          >{{ stock.name
+          }}<small>(Preço: {{ stock.price | currency }})</small></strong
         >
       </v-card-title>
     </v-card>
@@ -17,8 +18,10 @@
         <v-btn
           class="green darken-3 white--text"
           @click="byStock"
-          :disable="quantity <= 0 || !Number.isInteger(quantity)"
-          >Comprar</v-btn
+          :disable="
+            insufficientFunds || quantity <= 0 || !Number.isInteger(quantity)
+          "
+          >{{ insufficientFunds ? "Insuficiente" : "Comprar" }}</v-btn
         >
       </v-container>
     </v-card>
@@ -32,6 +35,14 @@ export default {
     return {
       quantity: 0,
     };
+  },
+  computed: {
+    funds() {
+      return this.$store.getters.funds;
+    },
+    insufficientFunds() {
+      return this.quantity * this.stock.price > this.funds;
+    },
   },
   methods: {
     byStock() {
